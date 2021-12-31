@@ -7,7 +7,7 @@ bool is_even(int num)
     return ((num&1) == 0) ? true:false;
 }
 
-int main()
+void test_even_num()
 {
     int arr[]{5,4,1,4,3,5,1,2};
 
@@ -18,5 +18,10 @@ int main()
         else
             cout<<arr[i]<<" is a Odd number\n";
     }
+}
+
+int main()
+{
+    test_even_num();
     return 0;
 }
