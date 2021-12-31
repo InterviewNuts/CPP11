@@ -1,5 +1,13 @@
 #include<iostream>
 using namespace std;
+/*
+
+	1 0 0
+&	0 0 1
+==============
+	0 0 0
+
+*/
 
 bool is_even(int num)
 {
