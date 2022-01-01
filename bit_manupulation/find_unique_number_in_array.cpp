@@ -2,6 +2,8 @@
 using namespace std;
 /*
 
+Note: If a number repeated more then 3,5,7 like this times, then this following logic will not work.
+as  I am doing XOR, as xor of 3 times , we come back to square one.
 	1 0 0
 &	0 0 1
 ==============
