@@ -1,3 +1,15 @@
+/**
+ * @file getBit_setBit_using_shift_operator.cpp
+ * @author Haramohan Sahu (hara.sahu@gmail.com)
+ * @brief This program will tell the bit position  and also set the bit position.
+ * @version 0.1
+ * @date 2022-01-03
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
+
 //! This program will tell the bit position  and also set the bit position.
 #include<iostream>
 using namespace std;

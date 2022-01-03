@@ -1,9 +1,17 @@
+/**
+ * @file find_unique_2_num_in_a_array.cpp
+ * @author Haramohan Sahu (hara.sahu@gmail.com)
+ * @brief 
+ * @version 0.1
+ * @date 2022-01-03
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include<iostream>
 #include<string>
 using namespace std;
 /*
-Note: If a number repeated more then 3,5,7 like this times, then this following logic will not work.
-as  I am doing XOR, as xor of 3 times , we come back to square one.
 
 	1 0 0
 &	0 0 1

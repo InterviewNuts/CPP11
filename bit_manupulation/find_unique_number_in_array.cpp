@@ -1,9 +1,17 @@
+/**
+ * @file find_unique_number_in_array.cpp
+ * @author Haramohan Sahu (hara.sahu@gmail.com)
+ * @brief 
+ * @version 0.1
+ * @date 2022-01-03
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include<iostream>
 using namespace std;
 /*
 
-Note: If a number repeated more then 3,5,7 like this times, then this following logic will not work.
-as  I am doing XOR, as xor of 3 times , we come back to square one.
 	1 0 0
 &	0 0 1
 ==============
@@ -16,7 +24,7 @@ as  I am doing XOR, as xor of 3 times , we come back to square one.
 
 int get_unique_number_from_array()
 {
-     int arr[]{5,4,1,1,4,3,5,3,8};
+     int arr[]{5,4,1,1,4,3,5,3,3,3,8};
      int res=0,sz;
 
 
