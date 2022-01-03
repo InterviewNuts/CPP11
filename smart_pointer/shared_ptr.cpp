@@ -31,11 +31,14 @@ public:
 
 int main()
 {
-    Dog dd;
     shared_ptr<Dog>p(new Dog("puppy"));
-    p->DogName();
-    std::cout << sizeof(dd) << " :\n  ";
-    std::cout << sizeof(p) <<" :  "<< sizeof(*p) << endl;
+    //! shared pointer's reference count gets incremented, 
+    //! if it is referenced again by some other shared ptr.
+    //! It will print 1
+    cout<<p.use_count() <<"\n";
 
+    shared_ptr<Dog>p1=p;
+    //! It will print 2
+    cout<<p.use_count() <<"\n";
     return 0;
 }
