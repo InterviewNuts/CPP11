@@ -1,3 +1,14 @@
+/**
+ * @file custome_deleter_shared_ptr.cpp
+ * @author Haramohan Sahu (hara.sahu@gmail.com)
+ * @brief 
+ * @version 0.1
+ * @date 2022-01-03
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #include<iostream>
 #include<memory>
 #include<vector>
