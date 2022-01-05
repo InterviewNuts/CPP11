@@ -40,7 +40,7 @@ assume that padding was not there, then  (C|a|a|a|a|), it will two cycle to read
 #include<iostream>
 
 using namespace std;
-#pragma pack(1) 
+//#pragma pack(1) 
 int main()
 {
     struct padding
@@ -54,3 +54,5 @@ int main()
 
 // Here the size would be 8 as it would padd number of bytes depending the highest data type present in the 
 //! structure. so int = 4 , 1 bye is char , 3 more bytes are padded.
+
+//! if use pragma pack(1), then it will show 5 .
