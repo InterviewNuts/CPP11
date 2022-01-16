@@ -1,0 +1,60 @@
+
+
+what is Future in C++?
+Ans: std::future represents the consumer/read-end and std::promise the producer/write-end.
+So we can say that Future consumes the value which is being produced by promise.
+A std::future object may be created either by a call to std::async or through a std::packaged_task or a std::promise.
+The latter two both provide a get_future() method for this purpose. 
+
+In general, we use a std::future object to hold the return value of a (possibly) asynchronously run function call.
+
+On the lowest level, a std::future is always associated with a std::promise. 
+A future is used to wait for some value from its associated promise, while the promise is used to supply 
+that precise value.
+
+exampele
+
+
+#include<iostream>
+#include<thread>
+
+int f(int x)
+{
+    return x+1;
+}
+
+
+
+int main()
+{
+    // This will be the write-end
+std::promise<int> promise;
+// This will be the read-end
+auto future = promise.get_future();
+
+    // Launch f asynchronously
+    std::thread thread([&promise](int x){
+        promise.set_value(f(x));
+    },5);
+
+    thread.join();
+    return 0;
+    
+}
+
+#include <iostream>
+#include <thread>
+#include <future>
+void initiazer(std::promise<int> * promObj)
+{
+    std::cout<<"Inside Thread"<<std::endl;     promObj->set_value(35);
+}
+int main()
+{
+    std::promise<int> promiseObj;
+    std::future<int> futureObj = promiseObj.get_future();
+    std::thread th(initiazer, &promiseObj);
+    std::cout<<futureObj.get()<<std::endl;
+    th.join();
+    return 0;
+}
