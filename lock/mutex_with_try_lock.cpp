@@ -15,7 +15,7 @@ int counter = 0;
 std::mutex mu;
 
 /*
-Here the actual lock is not happening , like batch it works so we up 200 value
+Here the actual lock is happening , like batch it works so we up 200 value
 */
 void incrementCounter_1()
 {
@@ -33,7 +33,8 @@ void incrementCounter()
     for (int i = 0; i < 100; ++i)
     {
         /*
-            Here the actual lock is happening , like batch it works so we up 100 value.
+            Here the actual lock meaning is not happening , since one thread is locked,
+            other thread trys so does not get control& by this time loop finished, so we get Sup 100 value.
             once it is lock , other tread will wait
         */
         if (mu.try_lock())
