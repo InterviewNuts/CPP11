@@ -1,0 +1,377 @@
+Un ordered map and un ordered set:
+====================================
+Both are same from internal point of view . as set use internaly map DS only.
+
+ Set i.e. it can contains the unique elements only. unordered_set stores the elements internally 
+ using a Hash Table.
+ 
+We can declare an unordered_set of a particular type only i.e.
+std::unordered_set<T> setOfTypeT;
+
+Elements of Type with which an unoredered_set is declared can only be added in it. 
+Also, all elements of Type T should be,
+
+Copyable or Movable
+Comparable
+
+Above requirements are because of the reason that element added in unordered_set will 
+act as both key and value for internal Hash Table. 
+As it’s a key therefore it should be comparable and copy-able.
+
+Also, all elements in the unordered_set are immutable i.e. they can not be modified once inserted. 
+They can only be deleted after the insertion.
+
+// Array of int
+int arr[] = {2,4,6,1,3,6,8,3,2};
+// Create an unoredered set and initialize it with the array
+// Set will contain only unique elements
+std::unordered_set<int> setOfNum(arr, arr + sizeof(arr)/sizeof(int));
+
+// Create an unoredered set and initialize it initializer_list
+std::unordered_set<int> setOfNum2({1,2,3,1,3,4,2});
+
+std::unordered_set provides the different overloaded versions of insert() member function to insert elements i.e.
+
+
+pair<iterator,bool> insert ( const value_type& val );
+void insert ( InputIterator first, InputIterator last );
+void insert ( initializer_list<value_type> il );
+
+How to use Unordered_set with User defined classes
+==================================================
+std::unordered_set internally implements a hash table to store the elements. 
+
+std::unordered_set uses the hasher and comparison function. 
+For primitive data types like int, string etc. default hasher anc comparision functions will work i.e.
+
+std::hash<T>()
+std::equal_to<T>
+
+But for User defined Objects, these default implementations will not work. We need to 
+provide some extra to make this default functions work.
+
+There are 2 ways to make an unordered_set of User Define Types / Classes i.e.
+
+Create special functions to make default std::hash<> & std::equals_to<> functions to work with 
+User Defined classes
+Creating Custom Hasher and Comparision Functors and pass it to unordered_set.
+Lets see them one by one. But, first create a Student class i.e.
+
+class Student
+{
+  int mId;
+  std::string mName;
+public:
+  Student(int id, std::string name) :
+      mId(id), mName(name)
+  {
+  }
+  void displayInfo()
+  {
+    std::cout << mId << " :: " << mName << std::endl;
+  }
+  bool  operator ==(const Student & obj) const
+  {
+    if (mId == obj.mId)
+      return true;
+    else
+      return false;
+  }
+  int getId() const
+  {
+    return mId;
+  }
+  std::string
+  getName() const
+  {
+    return mName;
+  }
+};
+
+Unordered_set of User Defined Class with default Hasher & Comparision Function:
+=============================================================================
+
+Lets create an unordered_set of type Student taht should store unique Student objects based on ID.
+// Declaring unordered_set of Student
+  std::unordered_set<Student> setOfStudents;
+
+Here, we have not provided any Custom Hasher or Comparision function hence default hasher and 
+comparison function will be used i.e.
+Default Hasher Function for class Student
+
+std::hash<Student>(const Student & obj);
+
+Default Comparison Function for class Student 
+
+std::equals_to<Student>(const Student & obj1,const Student & obj2 );
+
+This will internally class the == operator() function.
+
+So, to make this unordered_set<Student> work, we need to implement the above hasher and == operator 
+for class Student.
+
+Implementing std::hash<Student>,
+namespace std
+{
+  template<>
+    struct hash<Student>
+    {
+      size_t
+      operator()(const Student & obj) const
+      {
+        return hash<int>()(obj.getId());
+      }
+    };
+}
+
+It will compute the hash on only member variable ID for an object of class Student.
+Implementing == operator for class Student,
+
+This will compare the ID only to check if two objects of class Student are equal or not i.e.
+  bool operator ==(const Student & obj) const
+  {
+    if (mId == obj.mId)
+      return true;
+    else
+      return false;
+  }
+
+Now we can use the std::unordered_set of type Student with default hasher and comparator i.e.
+std::unordered_set<Student> setOfStudents;
+// Inserting elements
+setOfStudents.insert(Student(11, "John"));
+setOfStudents.insert(Student(12, "Harry"));
+setOfStudents.insert(Student(13, "Ritz"));
+setOfStudents.insert(Student(14, "John"));
+// Trying to insert with duplicate ID
+// It will not be inserted
+auto res = setOfStudents.insert(Student(12, "Varun"));
+if (res.second == false)
+  std::cout << "Failed to insert with ID 12" << std::endl;
+
+The above Unordered Set will store elements with unique size only.Now, suppose a new requirement comes and we also want to store objects in a new unoredered_set with uniwue names instead of unique ID. How to do that?
+unordered_set of User Defined Class with Custom Hasher and Comparator
+As, now we need to create a new unordered_set of type Student that can store unique Student objects based on name instead of ID, so we can not use the above implementation of std::hash<Student> and operator==.
+
+
+
+ 
+
+So, to achieve this we can create custom Hasher and Comparator.
+
+Custom Hasher for class Student
+
+It will compute the hash based on name of Student,
+// Custom Hash Functor that will compute the hash on the
+// passed string objects length
+struct StudentHasher
+{
+  size_t
+  operator()(const Student & obj) const
+  {
+    return std::hash<std::string>()(obj.getName());
+  }
+};
+
+Custom Comparator for class Student,
+It will compare the two Student objects based on name instead of ID i.e.
+// Custom comparator that compares the string objects by length
+struct StudentComparator
+{
+  bool
+  operator()(const Student & obj1, const Student & obj2) const
+  {
+    if (obj1.getName() == obj2.getName())
+      return true;
+    return false;
+  }
+};
+
+Now lets use these Custom Functors
+  // Declaring unordered_set of Student
+  std::unordered_set<Student, StudentHasher, StudentComparator> setOfStudByName;
+
+This set will store the unique student objects based on name only.
+Complete working Example is as follows,
+#include <iostream>
+#include <unordered_set>
+class Student
+{
+  int mId;
+  std::string mName;
+public:
+  Student(int id, std::string name) :
+      mId(id), mName(name)
+  {
+  }
+  void
+  displayInfo()
+  {
+    std::cout << mId << " :: " << mName << std::endl;
+  }
+  bool
+  operator ==(const Student & obj) const
+  {
+    if (mId == obj.mId)
+      return true;
+    else
+      return false;
+  }
+  int
+  getId() const
+  {
+    return mId;
+  }
+  std::string
+  getName() const
+  {
+    return mName;
+  }
+};
+namespace std
+{
+  template<>
+    struct hash<Student>
+    {
+      size_t
+      operator()(const Student & obj) const
+      {
+        return hash<int>()(obj.getId());
+      }
+    };
+}
+// Custom Hash Functor that will compute the hash on the
+// passed string objects length
+struct StudentHasher
+{
+  size_t
+  operator()(const Student & obj) const
+  {
+    return std::hash<std::string>()(obj.getName());
+  }
+};
+// Custom comparator that compares the string objects by length
+struct StudentComparator
+{
+  bool
+  operator()(const Student & obj1, const Student & obj2) const
+  {
+    if (obj1.getName() == obj2.getName())
+      return true;
+    return false;
+  }
+};
+int
+main()
+{
+  // Declaring unordered_set of Student
+  std::unordered_set<Student> setOfStudents;
+  std::cout << "Creating an Unordered_set by unique ID\n";
+// Inserting elements
+  setOfStudents.insert(Student(11, "John"));
+  setOfStudents.insert(Student(12, "Harry"));
+  setOfStudents.insert(Student(13, "Ritz"));
+  setOfStudents.insert(Student(14, "John"));
+// Trying to insert with duplicate ID
+  auto res = setOfStudents.insert(Student(12, "Varun"));
+  if (res.second == false)
+    std::cout << "Failed to insert with ID 12" << std::endl;
+  for (Student st : setOfStudents)
+    st.displayInfo();
+  /*-----------------------------------------------*/
+  // Declaring unordered_set of Student
+  std::unordered_set<Student, StudentHasher, StudentComparator> setOfStudByName;
+  std::cout << "Creating an Unordered_set by Unique Name\n";
+  // Inserting elements
+  setOfStudByName.insert(Student(11, "John"));
+  setOfStudByName.insert(Student(12, "Harry"));
+  setOfStudByName.insert(Student(13, "Ritz"));
+  res = setOfStudByName.insert(Student(14, "John"));
+  if (res.second == false)
+    std::cout << "Failed to insert with duplicate name - John" << std::endl;
+  // Trying to insert with duplicate ID
+  res = setOfStudByName.insert(Student(12, "Varun"));
+  if (res.second == false)
+    std::cout << "Failed to insert with ID 12" << std::endl;
+  else
+    std::cout << "Successful in inserting with ID 12 again" << std::endl;
+  for (Student st : setOfStudByName)
+    st.displayInfo();
+  return 0;
+}
+
+Now lets discuss what happens once we insert an element into un ordered set or map;
+
+Whenever we insert an element in unordered_set two things happen i.e
+It calls the hasher function on passed element and compute the hash code. 
+Now on the basis of this hash code it selects the appropriate bucket for the element.
+
+Then compares the passed element with all the elements in the bucket to check if any similar 
+element is already present. If not then it stores the element in that bucket.
+
+Therefore, If two elements are equal then there hashcode should always be same. 
+Otherwise it will impossible to search for correct element in unordered_set.
+While declaring an unordered_set we provides the type of element that can be stored in set. Along with that we can also provide the type of custom hasher and comparison functions.
+
+Now, suppose our unordered_set is of type T and didn’t supplied any default custom hasher function and 
+comparison function. Then in that case default hasher andcomparison function will be used i.e.
+
+std::hash<T>()
+std::equal_to<T>
+For example, if create a unordered_set of std::string i.e.
+std::unordered_set<std::string> setOfStrs;
+
+Above unordered_set uses the default hasher and comparison function and it is equivalent to,
+std::unordered_set<std::string, std::hash<std::string> , std::equal_to<std::string> > setOfStrs;
+
+std::hash calculates the hash of primitive data types and std::equals_to internally calls == function 
+on the passed elements for comparison. 
+Let’s see an example of  custom hasher and comparision function.
+
+
+Suppose, we want to create an std::unordered_set of std::string and want to store 
+strings of unique lengths only. As, the default equals_to<>() function uses the == operator to compare 
+the elements. But in our scenario we want to compare elements based on length i.e. 
+two elements should be considered equal if they have the same length. 
+
+For that we need to create our custom Comparison Function i.e.
+
+Custom Compare Function
+// Custom comparator that compares the string objects by length
+struct StringEqualBySize {
+public:
+    bool operator()(const std::string & str1, const std::string & str2) const {
+        if (str1.length() == str2.length())
+            return true;
+        else
+            return false;
+    }
+};
+
+If two elements are equal according to the comparision function then their hash code should be same. 
+In our scenario above comparator is comparing two elements based on length. 
+So, we can’t use default std::hash<std::string>() function because that will compute the hash code 
+on complete object instead of length.
+
+
+For example, according to above compare function “abc” and “def” are equal because their length is same. 
+But their hash code can be different if computed with default std::hash<std::string>. 
+Therefore, we need custom hasher function, so that elements which are equal based on above compare 
+function should have same hash code.
+
+Custom hasher
+// Custom Hash Functor that will compute the hash on the
+// passed string objects length
+struct StringHashBySize {
+public:
+    size_t operator()(const std::string & str) const {
+        int size = str.length();
+        return std::hash<int>()(size);
+    }
+};
+
+Declaring unordered_set with custom hasher and compare function,
+// Declaring unordered_set with Custom Hash Function and comparator
+std::unordered_set<std::string, StringHashBySize, StringEqualBySize> setOfStrs;
+
+
